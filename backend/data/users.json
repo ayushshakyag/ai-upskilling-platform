@@ -1,0 +1,20 @@
+{
+  "users": [
+    {
+      "id": "2141c65b-d5a9-4b08-82b6-47d63d083cde",
+      "email": "admin@example.com",
+      "password_hash": "$2b$12$Qgrl33JXDbePgWxE8A8bue2LecePGcRAWHpPGeVZCw1K1LlvVYXEG",
+      "is_admin": true,
+      "is_blocked": false,
+      "created_at": "2026-01-17T16:41:11.938833"
+    },
+    {
+      "id": "e4a40540-ca1b-493d-ad5a-8c0777c72763",
+      "email": "admin@example.com",
+      "password_hash": "$2b$12$.JlqlzAYhAhbDRFfEDMOeOZfk8moa8b0YP1Kpb3s.UmI1DinElWZ.",
+      "is_admin": true,
+      "is_blocked": false,
+      "created_at": "2026-01-17T16:41:11.943231"
+    }
+  ]
+}
