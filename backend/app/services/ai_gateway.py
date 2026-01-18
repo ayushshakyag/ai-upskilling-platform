@@ -37,14 +37,32 @@ async def generate_roadmap_stream(user_goal: str, skill_level: str):
             "title": "string",
             "description": "string",
             "learning_objectives": ["string"],
-            "project_idea": "string"
+            "project_idea": "string",
+            "resources": [
+              {{
+                "title": "string",
+                "url": "string"
+              }}
+            ],
+            "quiz": [
+              {{
+                "question": "string",
+                "options": ["string"],
+                "correct_answer": "string"
+              }}
+            ]
         }}
       ]
     }}
+    
+    CRITICAL REQUIREMENTS:
+    1. Include 3-5 quiz questions per stage.
+    2. Provide 2-3 high-quality Resource links (official documentation, reputable open-source guides) per stage.
+    3. Ensure the title, summary, and stage descriptions are industrially technical and dense.
     """
     
-    # Format the full prompt
-    full_prompt = f"{prompt}\n\nUser Goal: {user_goal}\nSkill Level: {skill_level}"
+    # The full_prompt is already formatted in the prompt variable above
+    full_prompt = prompt
     
     try:
         yield f'0:{json.dumps("[DEBUG] Connecting to HF Router (OpenAI-compatible)...")}\n'
@@ -62,7 +80,7 @@ async def generate_roadmap_stream(user_goal: str, skill_level: str):
                     }
                 ],
                 temperature=0.3,
-                max_tokens=1200,
+                max_tokens=4000,
             )
         )
         
@@ -86,7 +104,28 @@ async def generate_roadmap_stream(user_goal: str, skill_level: str):
         
         yield f'0:{json.dumps("[DEBUG] SWITCHING TO MOCK DATA NOW.")}\n'
         # Fallback Mock Data (Streamed)
-        mock_data = '{\n  "roadmap_title": "AI Engineer (Mock)",\n  "summary": "API Connection Failed - Showing Backup Plan.",\n  "stages": [\n    {\n      "stage_id": "1",\n      "title": "Python Basics",\n      "description": "Learn Python syntax.",\n      "learning_objectives": ["Variables", "Loops"],\n      "project_idea": "Calculator"\n    }\n  ]\n}'
+        mock_data = '''{\n  "roadmap_title": "AI Engineer (Mock)",\n  "summary": "API Connection Failed - Showing Backup Plan.",\n  "stages": [\n    {\n      "stage_id": "1",\n      "title": "Python Basics",\n      "description": "Learn Python syntax.",\n      "learning_objectives": ["Variables", "Loops"],\n      "project_idea": "Calculator",
+      "resources": [
+        {
+          "title": "Official Python Tutorial",
+          "url": "https://docs.python.org/3/tutorial/"
+        }
+      ],
+      "quiz": [
+        {
+          "question": "What is Python?",
+          "options": ["Snake", "Language", "Car"],
+          "correct_answer": "Language"
+        },
+        {
+          "question": "Which of these is a Python keyword?",
+          "options": ["define", "def", "func"],
+          "correct_answer": "def"
+        }
+      ]
+    }
+  ]
+}'''
         chunk_size = 10
         for i in range(0, len(mock_data), chunk_size):
             chunk = mock_data[i:i+chunk_size]

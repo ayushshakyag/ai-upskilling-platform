@@ -9,6 +9,16 @@ interface User {
     email: string;
     is_admin: boolean;
     is_blocked: boolean;
+    credits: number;
+    is_agent_enabled: boolean;
+    created_at: string;
+}
+
+interface Roadmap {
+    id: string;
+    title: string;
+    user_goal: string;
+    skill_level: string;
     created_at: string;
 }
 
@@ -17,6 +27,8 @@ export default function AdminPage() {
     const [users, setUsers] = useState<User[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
+    const [selectedUserCourses, setSelectedUserCourses] = useState<Roadmap[] | null>(null);
+    const [viewingEmail, setViewingEmail] = useState('');
     const router = useRouter();
 
     useEffect(() => {
@@ -65,6 +77,66 @@ export default function AdminPage() {
             }
         } catch (error) {
             alert(`Failed to ${action} user`);
+        }
+    };
+
+    const toggleAgent = async (userId: string, currentStatus: boolean) => {
+        try {
+            const response = await fetch(`http://localhost:8000/api/admin/users/${userId}/toggle-agent`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ is_enabled: !currentStatus })
+            });
+            if (response.ok) {
+                setUsers(users.map(u => u.id === userId ? { ...u, is_agent_enabled: !currentStatus } : u));
+            }
+        } catch (error) {
+            alert(`Failed to toggle agent`);
+        }
+    };
+
+    const updateCredits = async (userId: string) => {
+        const currentCredits = users.find(u => u.id === userId)?.credits || 0;
+        const newCreditsStr = prompt('Enter new credit amount (-1 for infinite):', currentCredits.toString());
+        if (newCreditsStr === null) return;
+
+        const newCredits = parseInt(newCreditsStr);
+        if (isNaN(newCredits)) return alert('Invalid number');
+
+        try {
+            const response = await fetch(`http://localhost:8000/api/admin/users/${userId}/credits`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ credits: newCredits })
+            });
+            if (response.ok) {
+                setUsers(users.map(u => u.id === userId ? { ...u, credits: newCredits } : u));
+            }
+        } catch (error) {
+            alert(`Failed to update credits`);
+        }
+    };
+
+    const fetchUserCourses = async (userId: string, email: string) => {
+        try {
+            const response = await fetch(`http://localhost:8000/api/admin/users/${userId}/roadmaps`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setSelectedUserCourses(data);
+                setViewingEmail(email);
+            }
+        } catch (error) {
+            alert('Failed to fetch courses');
         }
     };
 
@@ -121,8 +193,8 @@ export default function AdminPage() {
                     <thead className="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-800">
                         <tr>
                             <th className="px-8 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">User Details</th>
-                            <th className="px-8 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Role</th>
-                            <th className="px-8 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Status</th>
+                            <th className="px-8 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Credits</th>
+                            <th className="px-8 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Agent Status</th>
                             <th className="px-8 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Joined</th>
                             <th className="px-8 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest text-right">Actions</th>
                         </tr>
@@ -138,41 +210,51 @@ export default function AdminPage() {
                                         <div>
                                             <div className="font-semibold">{u.email}</div>
                                             <div className="text-xs text-zinc-500">ID: {u.id.substring(0, 8)}...</div>
+                                            {u.is_admin && <span className="text-[10px] font-bold bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded ml-0.5">ADMIN</span>}
                                         </div>
                                     </div>
                                 </td>
                                 <td className="px-8 py-6">
-                                    {u.is_admin ? (
-                                        <span className="px-3 py-1 bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400 rounded-full text-xs font-bold">Admin</span>
-                                    ) : (
-                                        <span className="px-3 py-1 bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 rounded-full text-xs font-bold">User</span>
-                                    )}
+                                    <button
+                                        onClick={() => updateCredits(u.id)}
+                                        className="flex flex-col items-start hover:bg-zinc-100 dark:hover:bg-zinc-800 p-2 rounded-lg transition"
+                                    >
+                                        <span className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+                                            {u.credits === -1 ? '∞' : u.credits}
+                                        </span>
+                                        <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-tighter">Credits</span>
+                                    </button>
                                 </td>
                                 <td className="px-8 py-6">
-                                    {u.is_blocked ? (
-                                        <span className="flex items-center text-red-600 text-sm font-semibold">
-                                            <span className="w-2 h-2 bg-red-600 rounded-full mr-2"></span>
-                                            Blocked
-                                        </span>
-                                    ) : (
-                                        <span className="flex items-center text-emerald-600 text-sm font-semibold">
-                                            <span className="w-2 h-2 bg-emerald-600 rounded-full mr-2"></span>
-                                            Active
-                                        </span>
-                                    )}
+                                    <button
+                                        onClick={() => toggleAgent(u.id, u.is_agent_enabled)}
+                                        className={`flex items-center px-3 py-1.5 rounded-full text-[10px] font-bold transition ${u.is_agent_enabled
+                                                ? 'bg-emerald-100/50 text-emerald-700 border border-emerald-200'
+                                                : 'bg-zinc-100 text-zinc-400 border border-zinc-200'
+                                            }`}
+                                    >
+                                        <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${u.is_agent_enabled ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-300'}`}></span>
+                                        {u.is_agent_enabled ? 'AGENT ACTIVE' : 'AGENT STOPPED'}
+                                    </button>
                                 </td>
                                 <td className="px-8 py-6 text-sm text-zinc-500">
                                     {new Date(u.created_at).toLocaleDateString()}
                                 </td>
                                 <td className="px-8 py-6 text-right">
                                     <div className="flex items-center justify-end space-x-2">
+                                        <button
+                                            onClick={() => fetchUserCourses(u.id, u.email)}
+                                            className="px-4 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-xl text-xs font-bold hover:opacity-80 transition"
+                                        >
+                                            COURSES
+                                        </button>
                                         {user?.id !== u.id && (
                                             <>
                                                 <button
                                                     onClick={() => toggleBlock(u.id, u.is_blocked)}
                                                     className={`px-4 py-2 rounded-xl text-xs font-bold transition ${u.is_blocked
-                                                            ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'
-                                                            : 'bg-red-50 text-red-600 hover:bg-red-100'
+                                                        ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'
+                                                        : 'bg-red-50 text-red-600 hover:bg-red-100'
                                                         }`}
                                                 >
                                                     {u.is_blocked ? 'UNBLOCK' : 'BLOCK'}
@@ -194,6 +276,50 @@ export default function AdminPage() {
                     </tbody>
                 </table>
             </div>
+
+            {/* Course View Modal/Drawer */}
+            {selectedUserCourses && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-white dark:bg-zinc-900 rounded-3xl w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col shadow-2xl">
+                        <div className="p-8 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-zinc-50/50 dark:bg-zinc-800/30">
+                            <div>
+                                <h2 className="text-2xl font-bold">User Learning Path</h2>
+                                <p className="text-zinc-500 text-sm mt-1">{viewingEmail}</p>
+                            </div>
+                            <button
+                                onClick={() => setSelectedUserCourses(null)}
+                                className="w-10 h-10 rounded-full bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center hover:bg-zinc-50 transition"
+                            >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-8 space-y-4">
+                            {selectedUserCourses.length === 0 ? (
+                                <div className="text-center py-10">
+                                    <p className="text-zinc-500">No courses created yet.</p>
+                                </div>
+                            ) : (
+                                selectedUserCourses.map((roadmap) => (
+                                    <div key={roadmap.id} className="p-6 rounded-2xl border border-zinc-100 dark:border-zinc-800 hover:border-blue-500 transition-colors group">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <h3 className="font-bold text-lg group-hover:text-blue-600 transition-colors">{roadmap.title}</h3>
+                                            <span className="text-[10px] font-bold uppercase tracking-widest bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded">
+                                                {roadmap.skill_level}
+                                            </span>
+                                        </div>
+                                        <p className="text-sm text-zinc-500 line-clamp-2">{roadmap.user_goal}</p>
+                                        <div className="mt-4 text-[10px] text-zinc-400 font-bold uppercase tracking-tighter">
+                                            Created: {new Date(roadmap.created_at).toLocaleDateString()}
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

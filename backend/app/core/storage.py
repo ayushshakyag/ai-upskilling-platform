@@ -23,7 +23,14 @@ def init_storage():
 def load_users() -> Dict:
     try:
         with open(USERS_FILE, 'r') as f:
-            return json.load(f)
+            data = json.load(f)
+            # Add missing fields to existing users (Backwards Compatibility)
+            for user in data["users"]:
+                if "credits" not in user:
+                    user["credits"] = -1 # Infinite for existing users
+                if "is_agent_enabled" not in user:
+                    user["is_agent_enabled"] = True
+            return data
     except:
         return {"users": []}
 
@@ -53,6 +60,8 @@ def create_user(email: str, password_hash: str, is_admin: bool = False) -> Dict:
         "password_hash": password_hash,
         "is_admin": is_admin,
         "is_blocked": False,
+        "credits": -1, # Dev Mode: Infinite by default
+        "is_agent_enabled": True,
         "created_at": datetime.utcnow().isoformat()
     }
     data["users"].append(user)

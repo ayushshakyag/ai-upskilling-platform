@@ -10,7 +10,15 @@ class UserListResponse(BaseModel):
     email: str
     is_admin: bool
     is_blocked: bool
+    credits: int
+    is_agent_enabled: bool
     created_at: str
+
+class UpdateCreditsRequest(BaseModel):
+    credits: int
+
+class ToggleAgentRequest(BaseModel):
+    is_enabled: bool
 
 def require_admin(authorization: Optional[str] = Header(None)):
     """Middleware to check if user is admin"""
@@ -38,6 +46,8 @@ async def list_users(authorization: Optional[str] = Header(None)):
             "email": user["email"],
             "is_admin": user["is_admin"],
             "is_blocked": user.get("is_blocked", False),
+            "credits": user.get("credits", -1),
+            "is_agent_enabled": user.get("is_agent_enabled", True),
             "created_at": user["created_at"]
         }
         for user in users
@@ -90,3 +100,35 @@ async def delete_user(user_id: str, authorization: Optional[str] = Header(None))
         raise HTTPException(status_code=500, detail="Failed to delete user")
     
     return {"message": "User deleted successfully"}
+
+@router.get("/users/{user_id}/roadmaps")
+async def list_user_roadmaps(user_id: str, authorization: Optional[str] = Header(None)):
+    """List all roadmaps for a specific user (admin only)"""
+    require_admin(authorization)
+    
+    roadmaps = storage.get_roadmaps_by_user(user_id)
+    return roadmaps
+
+@router.put("/users/{user_id}/credits")
+async def update_user_credits(user_id: str, request: UpdateCreditsRequest, authorization: Optional[str] = Header(None)):
+    """Update user credits (admin only)"""
+    require_admin(authorization)
+    
+    user = storage.get_user_by_id(user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    storage.update_user(user_id, {"credits": request.credits})
+    return {"message": f"Credits updated to {request.credits}"}
+
+@router.put("/users/{user_id}/toggle-agent")
+async def toggle_user_agent(user_id: str, request: ToggleAgentRequest, authorization: Optional[str] = Header(None)):
+    """Enable/disable agent for a user (admin only)"""
+    require_admin(authorization)
+    
+    user = storage.get_user_by_id(user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    storage.update_user(user_id, {"is_agent_enabled": request.is_enabled})
+    return {"message": "Agent status updated"}

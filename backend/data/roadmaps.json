@@ -1,73 +1,501 @@
 {
   "roadmaps": [
     {
-      "id": "8c53d6c4-5fec-4fdc-ac36-af20f603dc14",
+      "id": "2f7990b9-ef9a-4eed-b816-abbc4da404d4",
       "user_id": "9090fb7c-1288-421b-9ceb-63c67d27b677",
-      "title": "Intermediate-to-Advanced Computer Vision Mastery Roadmap",
-      "user_goal": "computer vision",
-      "skill_level": "intermediate",
+      "title": "Zero-to-Production Backend Developer Path",
+      "user_goal": "Backend development",
+      "skill_level": "beginner",
       "roadmap_data": {
-        "roadmap_title": "Intermediate-to-Advanced Computer Vision Mastery Roadmap",
-        "summary": "A 5-stage, project-driven path that takes learners from solid OpenCV fundamentals to deploying state-of-the-art vision models on edge devices. Emphasis is placed on reproducible experimentation, modern deep-learning workflows, and real-world deployment constraints.",
+        "roadmap_title": "Zero-to-Production Backend Developer Path",
+        "summary": "A rigorously sequenced curriculum that transforms a novice into an employable backend engineer capable of designing, implementing, deploying and maintaining horizontally-scalable RESTful services. Emphasis is placed on deterministic API contracts, ACID data integrity, automated quality gates, and cloud-native observability.",
         "stages": [
           {
-            "stage_id": "cv-im-01",
-            "title": "Core Foundations & Image Processing",
-            "description": "Refresh and deepen your grasp of digital images, color spaces, geometric transformations, and classic filters. Build a reusable image-processing toolkit that will accelerate later stages.",
+            "stage_id": "S1",
+            "title": "Computer Science & Network Primitives",
+            "description": "Acquire the substrate knowledge required to reason about everything that happens after the TCP handshake. Master POSIX process model, I/O syscalls, HTTP semantics, and the event loop to understand why backend runtimes behave the way they do.",
             "learning_objectives": [
-              "Explain how images are stored and manipulated in memory (NumPy arrays vs. cv::Mat).",
-              "Implement histogram equalization, morphological operations, and frequency-domain filtering.",
-              "Profile and optimize OpenCV code with vectorization and multithreading."
+              "Differentiate blocking vs non-blocking I/O",
+              "Explain TCP three-way handshake and TLS 1.3 negotiation",
+              "Describe virtual memory, paging, and their impact on GC pauses",
+              "Interpret HTTP/1.1 and HTTP/2 frame layouts",
+              "Use strace/tcpdump to verify syscall and packet flow"
             ],
-            "project_idea": "Create a CLI utility that batch-enhances low-light smartphone photos (noise reduction + contrast + sharpening) and benchmarks speed on CPU vs. GPU."
+            "project_idea": "Build a minimal C10K-capable echo server in C using epoll/kqueue and benchmark with wrk.",
+            "resources": [
+              {
+                "title": "Beej's Guide to Network Programming",
+                "url": "https://beej.us/guide/bgnet/"
+              },
+              {
+                "title": "The Linux Programming Interface (Ch. 63\u201364)",
+                "url": "https://man7.org/tlpi/"
+              },
+              {
+                "title": "RFC 9110 - HTTP Semantics",
+                "url": "https://datatracker.ietf.org/doc/html/rfc9110"
+              }
+            ],
+            "quiz": [
+              {
+                "question": "Which syscall is used to monitor multiple file descriptors for readiness?",
+                "options": [
+                  "select",
+                  "poll",
+                  "epoll",
+                  "mmap"
+                ],
+                "correct_answer": "epoll"
+              },
+              {
+                "question": "What is the default TCP port for HTTPS?",
+                "options": [
+                  "80",
+                  "443",
+                  "8080",
+                  "22"
+                ],
+                "correct_answer": "443"
+              },
+              {
+                "question": "Which HTTP method is idempotent but may return different status codes on retry?",
+                "options": [
+                  "POST",
+                  "PATCH",
+                  "DELETE",
+                  "CONNECT"
+                ],
+                "correct_answer": "DELETE"
+              },
+              {
+                "question": "In HTTP/2, what mechanism prevents head-of-line blocking?",
+                "options": [
+                  "pipelining",
+                  "multiplexing",
+                  "chunked encoding",
+                  "trailers"
+                ],
+                "correct_answer": "multiplexing"
+              }
+            ]
           },
           {
-            "stage_id": "cv-im-02",
-            "title": "Feature Detection, Matching & Geometry",
-            "description": "Master robust local features, camera models, and two-view geometry to enable applications like panorama stitching and augmented reality.",
+            "stage_id": "S2",
+            "title": "Type-Safe Language Core & Toolchain",
+            "description": "Develop fluency in a statically-typed backend language (Java 21+ or Go 1.22+) covering generics, memory model, concurrency primitives, and the official toolchain. This stage establishes deterministic build pipelines and unit-testing hygiene.",
             "learning_objectives": [
-              "Compare SIFT, SURF, ORB, and learned features (e.g., SuperPoint) in terms of repeatability and speed.",
-              "Estimate homographies and fundamental matrices with RANSAC.",
-              "Calibrate a camera and remove radial distortion."
+              "Model domain entities with value objects and aggregates",
+              "Leverage virtual threads (Project Loom) or goroutines for concurrency",
+              "Write table-driven unit tests with 100 % statement coverage",
+              "Package reproducible artifacts with Maven/Go modules",
+              "Analyze GC logs and tune for sub-100 ms pause targets"
             ],
-            "project_idea": "Build a mobile app that stitches 5\u20138 overlapping photos into a 180\u00b0 panorama in <2 s on-device."
+            "project_idea": "Create a CLI ticket-booking engine with an in-memory H2/embedded SQLite store and 5000 concurrent integration tests.",
+            "resources": [
+              {
+                "title": "Go Blog: Concurrency Patterns",
+                "url": "https://go.dev/blog/pipelines"
+              },
+              {
+                "title": "OpenJDK 21 Virtual Threads Documentation",
+                "url": "https://docs.oracle.com/en/java/javase/21/core/virtual-threads.html"
+              },
+              {
+                "title": "Effective Java, 3rd Edition (Items 1\u201320)",
+                "url": "https://www.oreilly.com/library/view/effective-java-3rd/9780134686098/"
+              }
+            ],
+            "quiz": [
+              {
+                "question": "Which Go keyword yields CPU control without blocking an OS thread?",
+                "options": [
+                  "go",
+                  "defer",
+                  "chan",
+                  "select"
+                ],
+                "correct_answer": "go"
+              },
+              {
+                "question": "In Java, which GC algorithm targets low-latency heaps < 32 GB?",
+                "options": [
+                  "Serial",
+                  "Parallel",
+                  "G1",
+                  "ZGC"
+                ],
+                "correct_answer": "ZGC"
+              },
+              {
+                "question": "What is the correct way to version a Go module using semantic import path?",
+                "options": [
+                  "v1",
+                  "/v2",
+                  "/v0",
+                  "/latest"
+                ],
+                "correct_answer": "/v2"
+              },
+              {
+                "question": "Which JUnit 5 extension enables parameterized tests?",
+                "options": [
+                  "@TestFactory",
+                  "@ParameterizedTest",
+                  "@RepeatedTest",
+                  "@Tag"
+                ],
+                "correct_answer": "@ParameterizedTest"
+              }
+            ]
           },
           {
-            "stage_id": "cv-im-03",
-            "title": "Deep Learning for Recognition",
-            "description": "Transition from classical CV to modern CNNs. Learn transfer learning, data augmentation, and evaluation metrics for classification, detection, and segmentation.",
+            "stage_id": "S3",
+            "title": "Relational Data Modeling & ACID Transactions",
+            "description": "Design normalized schemas that enforce referential integrity under concurrent load. Master isolation levels, index internals, and query planning to guarantee consistent reads and writes at scale.",
             "learning_objectives": [
-              "Fine-tune ResNet and EfficientNet on a custom 10-class dataset with \u226590% top-1 accuracy.",
-              "Train an SSD or YOLOv8 detector and interpret mAP, PR curves, and confusion matrices.",
-              "Implement a U-Net that segments road scenes into 19 classes with \u22650.75 mIoU."
+              "Produce 3NF schemas avoiding update anomalies",
+              "Interpret B-tree and LSM-tree index structures",
+              "Choose correct isolation level to prevent phantom reads",
+              "Optimize queries using EXPLAIN ANALYZE hints",
+              "Implement pessimistic and optimistic locking patterns"
             ],
-            "project_idea": "Develop a web dashboard that ingests live traffic-camera feeds, detects vehicles, and counts them per lane, displaying real-time analytics."
+            "project_idea": "Build a bank ledger microservice with PostgreSQL that passes Jepsen-style linearizability tests under 1000 TPS.",
+            "resources": [
+              {
+                "title": "PostgreSQL 15 Documentation: Concurrency Control",
+                "url": "https://www.postgresql.org/docs/15/mvcc.html"
+              },
+              {
+                "title": "Use the Index, Luke!",
+                "url": "https://use-the-index-luke.com/"
+              },
+              {
+                "title": "Designing Data-Intensive Applications (Ch. 7)",
+                "url": "https://dataintensive.net/"
+              }
+            ],
+            "quiz": [
+              {
+                "question": "Which isolation level eliminates phantom reads?",
+                "options": [
+                  "Read Uncommitted",
+                  "Read Committed",
+                  "Repeatable Read",
+                  "Serializable"
+                ],
+                "correct_answer": "Serializable"
+              },
+              {
+                "question": "What PostgreSQL feature provides MVCC snapshots?",
+                "options": [
+                  "WAL",
+                  "VACUUM",
+                  "XID",
+                  "CTID"
+                ],
+                "correct_answer": "XID"
+              },
+              {
+                "question": "Which index type best supports range queries on timestamp columns?",
+                "options": [
+                  "Hash",
+                  "GiST",
+                  "B-tree",
+                  "BRIN"
+                ],
+                "correct_answer": "B-tree"
+              },
+              {
+                "question": "What anomaly is possible under Repeatable Read but not Serializable?",
+                "options": [
+                  "Dirty read",
+                  "Non-repeatable read",
+                  "Phantom read",
+                  "Lost update"
+                ],
+                "correct_answer": "Phantom read"
+              }
+            ]
           },
           {
-            "stage_id": "cv-im-04",
-            "title": "Advanced Architectures & Self-Supervised Learning",
-            "description": "Explore transformers, self-supervised pre-training, and multi-task learning to push accuracy and reduce labeled-data requirements.",
+            "stage_id": "S4",
+            "title": "RESTful API Design & Spring Boot / Gin",
+            "description": "Architect pragmatic REST endpoints adhering to Richardson Maturity Model level-3 (HATEOAS). Integrate OpenAPI-driven contracts, centralized exception handling, and DTO mapping to achieve consumer-agnostic services.",
             "learning_objectives": [
-              "Train a Vision Transformer (ViT) from scratch on ImageNet-1k and compare convergence vs. ResNet.",
-              "Implement contrastive learning (SimCLR or MoCo v3) and evaluate linear-probe accuracy.",
-              "Design a multi-task network that jointly detects objects and estimates depth."
+              "Model resources with nouns and represent state via verbs",
+              "Generate OpenAPI 3.1 spec from annotations",
+              "Implement idempotent POST using the Idempotency-Key header",
+              "Version APIs via Accept header negotiation",
+              "Secure endpoints with OAuth2 resource-server JWT validation"
             ],
-            "project_idea": "Build a few-shot product-recognition system for retail shelves: with only 5 images per SKU, achieve 95% retrieval accuracy using self-supervised features."
+            "project_idea": "Develop a HATEOAS-compliant catalog API with ETags, hypermedia controls, and Java SpringDoc/Gin-Swagger auto-generated SDK.",
+            "resources": [
+              {
+                "title": "Spring Boot 3 Reference",
+                "url": "https://docs.spring.io/spring-boot/docs/current/reference/"
+              },
+              {
+                "title": "Gin Web Framework Docs",
+                "url": "https://gin-gonic.com/docs/"
+              },
+              {
+                "title": "APIs You Don't Hate (Community Book)",
+                "url": "https://apisyouwonthate.com/"
+              }
+            ],
+            "quiz": [
+              {
+                "question": "Which HTTP status code indicates that a resource was created?",
+                "options": [
+                  "200",
+                  "201",
+                  "202",
+                  "204"
+                ],
+                "correct_answer": "201"
+              },
+              {
+                "question": "What header is used for optimistic concurrency control?",
+                "options": [
+                  "Last-Modified",
+                  "ETag",
+                  "If-Match",
+                  "Cache-Control"
+                ],
+                "correct_answer": "ETag"
+              },
+              {
+                "question": "Which annotation exposes a Spring Boot endpoint as REST?",
+                "options": [
+                  "@Controller",
+                  "@RestController",
+                  "@RequestMapping",
+                  "@Service"
+                ],
+                "correct_answer": "@RestController"
+              },
+              {
+                "question": "In OpenAPI 3, where are query parameters defined?",
+                "options": [
+                  "paths.*.parameters",
+                  "components.schemas",
+                  "info",
+                  "servers"
+                ],
+                "correct_answer": "paths.*.parameters"
+              }
+            ]
           },
           {
-            "stage_id": "cv-im-05",
-            "title": "Deployment & MLOps for Vision",
-            "description": "Convert trained models to efficient runtimes, monitor them in production, and update them over-the-air without downtime.",
+            "stage_id": "S5",
+            "title": "Testing Pyramid & Continuous Integration",
+            "description": "Establish deterministic quality gates: unit, integration, contract, and mutation tests. Wire pipelines with GitHub Actions/GitLab CI that enforce 80 % mutation coverage and sub-second feedback loops.",
             "learning_objectives": [
-              "Quantize and prune a segmentation model to <25 MB while maintaining \u00b11% mIoU.",
-              "Package the model behind a TensorRT or ONNX Runtime service with sub-100 ms latency on GPU.",
-              "Set up CI/CD with data drift detection and nightly re-training pipelines."
+              "Differentiate between mocks, stubs, and fakes",
+              "Write Testcontainers-based integration tests",
+              "Verify consumer-driven contracts with Pact",
+              "Configure parallel test execution to minimize wall-clock time",
+              "Gate merges on SonarQube quality profiles"
             ],
-            "project_idea": "Deploy the traffic-counting model from Stage 3 onto a Jetson Nano. Stream 1080p video @30 fps, log counts to Prometheus, and trigger Slack alerts when congestion exceeds thresholds."
+            "project_idea": "Configure a polyglot repo where Spring and Go services share Pact contracts and run 10k tests in < 5 min on CI.",
+            "resources": [
+              {
+                "title": "Testcontainers Java",
+                "url": "https://testcontainers.com/"
+              },
+              {
+                "title": "Pact Docs",
+                "url": "https://docs.pact.io/"
+              },
+              {
+                "title": "GitHub Actions: Workflow Syntax",
+                "url": "https://docs.github.com/en/actions/using-workflows"
+              }
+            ],
+            "quiz": [
+              {
+                "question": "Which tool performs consumer-driven contract testing?",
+                "options": [
+                  "JUnit",
+                  "Pact",
+                  "Cucumber",
+                  "TestNG"
+                ],
+                "correct_answer": "Pact"
+              },
+              {
+                "question": "What does the @MockBean annotation do in Spring tests?",
+                "options": [
+                  "Creates spy",
+                  "Injects mock into context",
+                  "Starts WireMock",
+                  "Configures profile"
+                ],
+                "correct_answer": "Injects mock into context"
+              },
+              {
+                "question": "Which CI feature allows matrix builds across language versions?",
+                "options": [
+                  "Artifacts",
+                  "Cache",
+                  "Strategy.matrix",
+                  "Needs"
+                ],
+                "correct_answer": "Strategy.matrix"
+              },
+              {
+                "question": "What mutation testing metric indicates killed mutants?",
+                "options": [
+                  "Line coverage",
+                  "Mutation score",
+                  "Cyclomatic complexity",
+                  "Code churn"
+                ],
+                "correct_answer": "Mutation score"
+              }
+            ]
+          },
+          {
+            "stage_id": "S6",
+            "title": "Containerization & Kubernetes Orchestration",
+            "description": "Package services as distroless images achieving < 50 MB attack surface. Deploy to Kubernetes with declarative manifests, readiness/liveness probes, and horizontal pod autoscaling based on 95th-percentile latency.",
+            "learning_objectives": [
+              "Write multi-stage Dockerfiles with build-cache optimization",
+              "Define Deployments, Services, and Ingress resources",
+              "Configure resource requests/limits for QoS guarantees",
+              "Implement graceful shutdown with preStop hooks",
+              "Observe workloads via Prometheus service monitors"
+            ],
+            "project_idea": "Deploy the previous catalog API to k3s with Helm, autoscale from 1 to 20 pods under 30 % CPU, and maintain p99 < 200 ms.",
+            "resources": [
+              {
+                "title": "Kubernetes Official Docs",
+                "url": "https://kubernetes.io/docs/"
+              },
+              {
+                "title": " distroless Images GitHub",
+                "url": "https://github.com/GoogleContainerTools/distroless"
+              },
+              {
+                "title": "Prometheus Operator Docs",
+                "url": "https://prometheus-operator.dev/"
+              }
+            ],
+            "quiz": [
+              {
+                "question": "Which probe determines when a pod receives traffic?",
+                "options": [
+                  "liveness",
+                  "readiness",
+                  "startup",
+                  "preStop"
+                ],
+                "correct_answer": "readiness"
+              },
+              {
+                "question": "What Kubernetes object manages desired replica count?",
+                "options": [
+                  "ReplicaSet",
+                  "StatefulSet",
+                  "DaemonSet",
+                  "Job"
+                ],
+                "correct_answer": "ReplicaSet"
+              },
+              {
+                "question": "Which annotation triggers nginx-ingress rewrite?",
+                "options": [
+                  "nginx.ingress.kubernetes.io/rewrite-target",
+                  "kubernetes.io/ingress.class",
+                  "nginx.org/ssl-redirect",
+                  "cert-manager.io/cluster-issuer"
+                ],
+                "correct_answer": "nginx.ingress.kubernetes.io/rewrite-target"
+              },
+              {
+                "question": "What is the default imagePullPolicy if tag is latest?",
+                "options": [
+                  "IfNotPresent",
+                  "Always",
+                  "Never",
+                  "Auto"
+                ],
+                "correct_answer": "Always"
+              }
+            ]
+          },
+          {
+            "stage_id": "S7",
+            "title": "Observability, SRE & Production Hardening",
+            "description": "Instrument code with OpenTelemetry to emit traces, metrics, logs. Define SLOs with 99.9 % availability, error budgets, and automated rollback via GitOps to achieve production resilience.",
+            "learning_objectives": [
+              "Correlate traces with logs using TraceId",
+              "Define RED metrics for every endpoint",
+              "Create Prometheus recording rules for SLI calculation",
+              "Implement circuit-breaker with resilience4j or go-resiliency",
+              "Conduct chaos experiments with ChaosMesh"
+            ],
+            "project_idea": "Run a game-day exercise: inject 2s latency between catalog and payment pods, verify alert fires, and auto-scale resolves SLO breach.",
+            "resources": [
+              {
+                "title": "Google SRE Workbook",
+                "url": "https://sre.google/workbook/"
+              },
+              {
+                "title": "OpenTelemetry Docs",
+                "url": "https://opentelemetry.io/docs/"
+              },
+              {
+                "title": "ChaosMesh Docs",
+                "url": "https://chaos-mesh.org/docs/"
+              }
+            ],
+            "quiz": [
+              {
+                "question": "Which OpenTelemetry signal provides request-scoped data?",
+                "options": [
+                  "Metric",
+                  "Log",
+                  "Trace",
+                  "Event"
+                ],
+                "correct_answer": "Trace"
+              },
+              {
+                "question": "What does the 'E' stand for in RED metrics?",
+                "options": [
+                  "Error",
+                  "Exception",
+                  "Event",
+                  "Efficiency"
+                ],
+                "correct_answer": "Error"
+              },
+              {
+                "question": "Which Kubernetes object is ideal for chaos experiments injecting pod-kill?",
+                "options": [
+                  "CronJob",
+                  "DaemonSet",
+                  "PodChaos",
+                  "NetworkPolicy"
+                ],
+                "correct_answer": "PodChaos"
+              },
+              {
+                "question": "What is the recommended error budget burn rate alert window?",
+                "options": [
+                  "1m",
+                  "5m",
+                  "30m",
+                  "2h"
+                ],
+                "correct_answer": "5m"
+              }
+            ]
           }
         ]
       },
-      "created_at": "2026-01-18T07:25:58.827170"
+      "created_at": "2026-01-18T08:24:53.593903"
     }
   ]
 }

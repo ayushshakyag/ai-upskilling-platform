@@ -27,9 +27,40 @@ class RoadmapResponse(BaseModel):
     created_at: str
 
 @router.post("/generate")
-async def generate_roadmap(request: GenerateRoadmapRequest):
+async def generate_roadmap(request: GenerateRoadmapRequest, authorization: Optional[str] = Header(None)):
+    """Generate a learning roadmap using AI with credit and agent status checks"""
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    current_user_token = auth_utils.get_current_user_from_token(authorization)
+    if not current_user_token:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    # Reload user from storage to get latest credits/status
+    user = storage.get_user_by_id(current_user_token["user_id"])
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Check if user is blocked
+    if user.get("is_blocked", False):
+        raise HTTPException(status_code=403, detail="Your account has been blocked")
+    
+    # Check agent status
+    if not user.get("is_agent_enabled", True):
+        raise HTTPException(status_code=403, detail="AI Agent access has been disabled by admin. Please contact support.")
+    
+    # Check credits (-1 is infinite)
+    credits = user.get("credits", -1)
+    if credits != -1 and credits <= 0:
+        raise HTTPException(status_code=403, detail="You have exhausted your credits. Please contact admin for more.")
+
     goal = request.user_goal or request.prompt
-    print(f"Received request: {goal}, {request.skill_level}")
+    print(f"Received request from {user['email']}: {goal}, {request.skill_level}")
+    
+    # Decrement credit if not infinite
+    if credits != -1:
+        storage.update_user(user["id"], {"credits": credits - 1})
+
     try:
         return StreamingResponse(
             generate_roadmap_stream(goal, request.skill_level),
@@ -37,6 +68,8 @@ async def generate_roadmap(request: GenerateRoadmapRequest):
         )
     except Exception as e:
         print(f"Error generating roadmap: {e}")
+        # Optionally refund credit on total failure? 
+        # For now keep it simple.
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/save", response_model=RoadmapResponse)
