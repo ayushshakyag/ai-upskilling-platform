@@ -1,3 +1,73 @@
 {
-  "roadmaps": []
+  "roadmaps": [
+    {
+      "id": "8c53d6c4-5fec-4fdc-ac36-af20f603dc14",
+      "user_id": "9090fb7c-1288-421b-9ceb-63c67d27b677",
+      "title": "Intermediate-to-Advanced Computer Vision Mastery Roadmap",
+      "user_goal": "computer vision",
+      "skill_level": "intermediate",
+      "roadmap_data": {
+        "roadmap_title": "Intermediate-to-Advanced Computer Vision Mastery Roadmap",
+        "summary": "A 5-stage, project-driven path that takes learners from solid OpenCV fundamentals to deploying state-of-the-art vision models on edge devices. Emphasis is placed on reproducible experimentation, modern deep-learning workflows, and real-world deployment constraints.",
+        "stages": [
+          {
+            "stage_id": "cv-im-01",
+            "title": "Core Foundations & Image Processing",
+            "description": "Refresh and deepen your grasp of digital images, color spaces, geometric transformations, and classic filters. Build a reusable image-processing toolkit that will accelerate later stages.",
+            "learning_objectives": [
+              "Explain how images are stored and manipulated in memory (NumPy arrays vs. cv::Mat).",
+              "Implement histogram equalization, morphological operations, and frequency-domain filtering.",
+              "Profile and optimize OpenCV code with vectorization and multithreading."
+            ],
+            "project_idea": "Create a CLI utility that batch-enhances low-light smartphone photos (noise reduction + contrast + sharpening) and benchmarks speed on CPU vs. GPU."
+          },
+          {
+            "stage_id": "cv-im-02",
+            "title": "Feature Detection, Matching & Geometry",
+            "description": "Master robust local features, camera models, and two-view geometry to enable applications like panorama stitching and augmented reality.",
+            "learning_objectives": [
+              "Compare SIFT, SURF, ORB, and learned features (e.g., SuperPoint) in terms of repeatability and speed.",
+              "Estimate homographies and fundamental matrices with RANSAC.",
+              "Calibrate a camera and remove radial distortion."
+            ],
+            "project_idea": "Build a mobile app that stitches 5\u20138 overlapping photos into a 180\u00b0 panorama in <2 s on-device."
+          },
+          {
+            "stage_id": "cv-im-03",
+            "title": "Deep Learning for Recognition",
+            "description": "Transition from classical CV to modern CNNs. Learn transfer learning, data augmentation, and evaluation metrics for classification, detection, and segmentation.",
+            "learning_objectives": [
+              "Fine-tune ResNet and EfficientNet on a custom 10-class dataset with \u226590% top-1 accuracy.",
+              "Train an SSD or YOLOv8 detector and interpret mAP, PR curves, and confusion matrices.",
+              "Implement a U-Net that segments road scenes into 19 classes with \u22650.75 mIoU."
+            ],
+            "project_idea": "Develop a web dashboard that ingests live traffic-camera feeds, detects vehicles, and counts them per lane, displaying real-time analytics."
+          },
+          {
+            "stage_id": "cv-im-04",
+            "title": "Advanced Architectures & Self-Supervised Learning",
+            "description": "Explore transformers, self-supervised pre-training, and multi-task learning to push accuracy and reduce labeled-data requirements.",
+            "learning_objectives": [
+              "Train a Vision Transformer (ViT) from scratch on ImageNet-1k and compare convergence vs. ResNet.",
+              "Implement contrastive learning (SimCLR or MoCo v3) and evaluate linear-probe accuracy.",
+              "Design a multi-task network that jointly detects objects and estimates depth."
+            ],
+            "project_idea": "Build a few-shot product-recognition system for retail shelves: with only 5 images per SKU, achieve 95% retrieval accuracy using self-supervised features."
+          },
+          {
+            "stage_id": "cv-im-05",
+            "title": "Deployment & MLOps for Vision",
+            "description": "Convert trained models to efficient runtimes, monitor them in production, and update them over-the-air without downtime.",
+            "learning_objectives": [
+              "Quantize and prune a segmentation model to <25 MB while maintaining \u00b11% mIoU.",
+              "Package the model behind a TensorRT or ONNX Runtime service with sub-100 ms latency on GPU.",
+              "Set up CI/CD with data drift detection and nightly re-training pipelines."
+            ],
+            "project_idea": "Deploy the traffic-counting model from Stage 3 onto a Jetson Nano. Stream 1080p video @30 fps, log counts to Prometheus, and trigger Slack alerts when congestion exceeds thresholds."
+          }
+        ]
+      },
+      "created_at": "2026-01-18T07:25:58.827170"
+    }
+  ]
 }
